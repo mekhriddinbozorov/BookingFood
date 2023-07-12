@@ -16,5 +16,4 @@ builder.Services.AddTransient<IUpdateHandler, UpdateHandler>();
 
 var app = builder.Build();
 
-
 app.Run();
