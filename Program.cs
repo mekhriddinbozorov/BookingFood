@@ -1,11 +1,12 @@
+using BookingFood.Data;
 using Microsoft.EntityFrameworkCore;
 using Telegram.Bot;
 using Telegram.Bot.Polling;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddDbContext<AppdbContext>(options =>
-    options.UseNpgsql(builder.Configuration.GetConnectionString("PostgressConnection")));
+builder.Services.AddDbContext<IAppDbContext, AppdbContext>(
+    options => options.UseNpgsql(builder.Configuration.GetConnectionString("PostgressConnection")));
     
 builder.Services.AddHostedService<BotBackgroundService>();
 
