@@ -1,17 +1,19 @@
 using Telegram.Bot;
 using Telegram.Bot.Polling;
 using Telegram.Bot.Types;
-using Telegram.Bot.Types.Enums;
 
 public partial class UpdateHandler : IUpdateHandler
 {
     private readonly ILogger<UpdateHandler> logger;
+    private readonly IServiceScopeFactory serviceScopeFactory;
+
     public UpdateHandler(
-        ILogger<UpdateHandler> logger
+        ILogger<UpdateHandler> logger,
+        IServiceScopeFactory serviceScopeFactory
     )
     {
         this.logger = logger;
-
+        this.serviceScopeFactory = serviceScopeFactory;
     }
     public Task HandlePollingErrorAsync(ITelegramBotClient botClient, Exception exception, CancellationToken cancellationToken)
     {
@@ -21,16 +23,9 @@ public partial class UpdateHandler : IUpdateHandler
 
     public async Task HandleUpdateAsync(ITelegramBotClient botClient, Update update, CancellationToken cancellationToken)
     {
-        var handleTask = update.Type switch
-        {
-            UpdateType.Message => HandleMessageUpdateAsync(botClient, update.Message, cancellationToken),
-            UpdateType.EditedMessage => HandleEditedMessageUpdateAsync(botClient, update.EditedMessage, cancellationToken),
-            _ => HandleUnknownUpdateAsync(botClient, update, cancellationToken)
-        };
-
         try
         {
-            await handleTask;
+            await HandleMessageUpdateAsync(botClient, update, cancellationToken);
         }
         catch (Exception ex)
         {
